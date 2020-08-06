@@ -20,6 +20,7 @@
         <module>qqhr-ds-consumer</module>
         <module>qqhr-ds-entity</module>
         <module>qqhr-ds-dao</module>
+        <module>qqhr-ds-common</module>
     </modules>
 
     <properties>
