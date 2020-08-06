@@ -21,6 +21,8 @@
         <module>qqhr-ds-entity</module>
         <module>qqhr-ds-dao</module>
         <module>qqhr-ds-common</module>
+        <module>qqhr-jl-golden</module>
+        <module>qqhr-channel-base</module>
     </modules>
 
     <properties>
