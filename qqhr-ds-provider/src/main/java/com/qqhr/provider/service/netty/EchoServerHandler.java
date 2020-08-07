@@ -52,9 +52,17 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         buf.readBytes(req);
 
         String request = new String(req,"utf-8");
+
+        String retStr = doMciscall(request);
+
         System.out.println("Client Request : " + request);
 
         ByteBuf resp = Unpooled.copiedBuffer(request.getBytes());
         ctx.writeAndFlush(resp);
+    }
+
+    private String doMciscall(String request){
+
+        return "qq";
     }
 }

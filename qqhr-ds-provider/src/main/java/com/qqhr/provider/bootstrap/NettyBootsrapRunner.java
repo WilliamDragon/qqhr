@@ -19,6 +19,11 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Component;
 
+public class NettyBootsrapRunner{
+
+}
+
+/*
 @Component
 public class NettyBootsrapRunner implements ApplicationRunner, ApplicationListener<ContextClosedEvent>, ApplicationContextAware {
 
@@ -74,3 +79,4 @@ public class NettyBootsrapRunner implements ApplicationRunner, ApplicationListen
         this.applicationContext = applicationContext;
     }
 }
+*/
