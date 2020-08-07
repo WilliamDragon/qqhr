@@ -1,14 +1,16 @@
-package com.qqhr.provider.bootstrap;
+package com.qqhr.consumer.bootstrap;
 
-import com.qqhr.provider.service.netty.EchoServerHandler;
+import com.qqhr.consumer.controller.netty.EchoClientHandler;
+
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -20,51 +22,50 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Component;
 
 
-
 @Component
 public class NettyBootsrapRunner implements ApplicationRunner, ApplicationListener<ContextClosedEvent>, ApplicationContextAware {
 
     @Value("${netty.port}")
-    private int nettyPort;
+    private int port;
+
+    @Value("${netty.host}")
+    private String host;
 
     private ApplicationContext applicationContext;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        //配置reactor 线程池
-        NioEventLoopGroup bossGroup = new NioEventLoopGroup();
-        NioEventLoopGroup workerGroup = new NioEventLoopGroup();
-
-        //创建ServerBootstrap 实例
-        ServerBootstrap bootstrap = new ServerBootstrap();
-
-        //绑定线程池
-        bootstrap.group(bossGroup, workerGroup)
-                //设置绑定服务端Channel
-                .channel(NioServerSocketChannel.class)
-                //设置TCP参数， backlog表示等待队列长度
-                .option(ChannelOption.SO_BACKLOG, 1024)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    protected void initChannel(SocketChannel socketChannel) throws Exception{
-                        //绑定处理事件的Handler，这里可以设置多个
-                        socketChannel.pipeline().addLast(applicationContext.getBean(EchoServerHandler.class));
+        //创建NIO处理线程
+        NioEventLoopGroup eventLoopGroup  = new NioEventLoopGroup();
+        //实例化Bootstrap
+        Bootstrap bootstrap = new Bootstrap();
+        //配置NIO处理线程
+        bootstrap.group(eventLoopGroup)
+                //设置并绑定客户端Channel
+                .channel(NioSocketChannel.class)
+                //TCP参数配置，TCP_NODELAY为低延迟
+                .option(ChannelOption.TCP_NODELAY,true)
+                //绑定事件处理类
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        //绑定处理事件Handler
+                        socketChannel.pipeline().addLast(applicationContext.getBean(EchoClientHandler.class));
                     }
                 });
-
         try {
-            //绑定本是异步操作,这里将其变为同步阻塞
-            ChannelFuture cf = bootstrap.bind(nettyPort).sync();
-            //promise模式，阻塞至channel关闭后才退出
+            //发起连接，将异步操作转为同步阻塞
+            ChannelFuture cf = bootstrap.connect(host,port).sync();
+            //同步阻塞至channle关闭后退出
             cf.channel().closeFuture().sync();
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
             //优雅退出，释放线程资源
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
+            eventLoopGroup.shutdownGracefully();
         }
+
     }
 
     @Override
