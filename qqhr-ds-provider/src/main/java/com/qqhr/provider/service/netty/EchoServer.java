@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.net.InetSocketAddress;
-
+// 此类不再使用
 public class EchoServer {
 
     @Value("${netty.port}")
