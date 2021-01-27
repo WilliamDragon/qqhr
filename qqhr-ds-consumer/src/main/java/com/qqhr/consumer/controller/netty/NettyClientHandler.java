@@ -4,27 +4,25 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-@Component
-public class EchoClientHandler extends ChannelInboundHandlerAdapter {
-    private ChannelHandlerContext ctx;
-    private ScannerInRunnable scannerInRunnable;
+public class NettyClientHandler extends ChannelInboundHandlerAdapter {
+    /*private ChannelHandlerContext ctx;
+    private EchoClientHandler.ScannerInRunnable scannerInRunnable;
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         stopComandIn(scannerInRunnable);
     }
 
-    private void startCommandIn(ScannerInRunnable scannerInRunnable) {
+    private void startCommandIn(EchoClientHandler.ScannerInRunnable scannerInRunnable) {
         commandTaskThreadPool.execute(scannerInRunnable);
     }
-    private void stopComandIn(ScannerInRunnable scannerInRunnable) {
+    private void stopComandIn(EchoClientHandler.ScannerInRunnable scannerInRunnable) {
         commandTaskThreadPool.remove(scannerInRunnable);
     }
 
@@ -37,7 +35,7 @@ public class EchoClientHandler extends ChannelInboundHandlerAdapter {
         //缓存ctx
         this.ctx = ctx;
         //发起循环读取命令行
-        scannerInRunnable = new ScannerInRunnable();
+        scannerInRunnable = new EchoClientHandler.ScannerInRunnable();
         startCommandIn(scannerInRunnable);
     }
 
@@ -55,8 +53,17 @@ public class EchoClientHandler extends ChannelInboundHandlerAdapter {
         //通过ctx向服务端发请求
         ByteBuf resp = Unpooled.copiedBuffer(request.getBytes());
         ctx.writeAndFlush(resp);
+    }*/
+    private ChannelHandlerContext ctx;
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        //缓存ctx
+        this.ctx = ctx;
+        //通过ctx向服务端发请求
+        //ByteBuf resp = Unpooled.copiedBuffer(request.getBytes());
+       // ctx.writeAndFlush(resp);
     }
-
+    //获取服务端返回的数据
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
@@ -70,3 +77,4 @@ public class EchoClientHandler extends ChannelInboundHandlerAdapter {
     //命令行输入实现=========================================
 
 }
+

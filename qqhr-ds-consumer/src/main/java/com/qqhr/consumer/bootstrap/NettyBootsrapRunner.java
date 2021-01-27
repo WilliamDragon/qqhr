@@ -1,22 +1,40 @@
-package com.qqhr.consumer.controller.netty;
+package com.qqhr.consumer.bootstrap;
+
+import com.qqhr.consumer.controller.netty.EchoClientHandler;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.stereotype.Component;
 
-public class EchoClient {
 
-    private final static String host = "127.0.0.1";
-    private final static int tmpPort = 8888;
-    public static void main(String[] args){
-        new EchoClient().connect(host,tmpPort);
-    }
+@Component
+public class NettyBootsrapRunner implements ApplicationRunner, ApplicationListener<ContextClosedEvent>, ApplicationContextAware {
 
-    public void connect(String host, int port){
+    @Value("${netty.port}")
+    private int port;
+
+    @Value("${netty.host}")
+    private String host;
+
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
 
         //创建NIO处理线程
         NioEventLoopGroup eventLoopGroup  = new NioEventLoopGroup();
@@ -32,7 +50,7 @@ public class EchoClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         //绑定处理事件Handler
-                        socketChannel.pipeline().addLast(new EchoClientHandler());
+                        socketChannel.pipeline().addLast(applicationContext.getBean(EchoClientHandler.class));
                     }
                 });
         try {
@@ -50,4 +68,13 @@ public class EchoClient {
 
     }
 
+    @Override
+    public void onApplicationEvent(ContextClosedEvent contextClosedEvent) {
+
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 }
+

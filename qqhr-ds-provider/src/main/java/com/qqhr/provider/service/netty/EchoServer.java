@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.net.InetSocketAddress;
-
+// 此类不再使用
 public class EchoServer {
 
     @Value("${netty.port}")
@@ -24,7 +24,7 @@ public class EchoServer {
     private EventLoopGroup bossGroup = new NioEventLoopGroup(); //线程组用于处理连接工作
     private EventLoopGroup workerGroup = new NioEventLoopGroup(); //线程组用于数据处理
 
-    @PostConstruct
+   // @PostConstruct
      public void start(){
          //创建ServerBootstrap 实例
          ServerBootstrap bootstrap = new ServerBootstrap();
@@ -72,7 +72,7 @@ public class EchoServer {
 
      }
 
-    @PreDestroy
+    //@PreDestroy
     public void destory() throws InterruptedException {
         bossGroup.shutdownGracefully().sync();
         workerGroup.shutdownGracefully().sync();

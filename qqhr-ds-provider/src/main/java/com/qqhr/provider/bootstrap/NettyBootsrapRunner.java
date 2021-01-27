@@ -1,6 +1,7 @@
 package com.qqhr.provider.bootstrap;
 
 import com.qqhr.provider.service.netty.EchoServerHandler;
+import com.qqhr.provider.service.netty.NettyServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 public class NettyBootsrapRunner{
 
 }
+
 
 /*
 @Component
@@ -58,6 +60,11 @@ public class NettyBootsrapRunner implements ApplicationRunner, ApplicationListen
         try {
             //绑定本是异步操作,这里将其变为同步阻塞
             ChannelFuture cf = bootstrap.bind(nettyPort).sync();
+            System.out.println("netty系统提供方开始监听");
+            if (cf.isSuccess()) {
+                //log.info("启动 Netty Server");
+                System.out.println("netty系统成功");
+            }
             //promise模式，阻塞至channel关闭后才退出
             cf.channel().closeFuture().sync();
 

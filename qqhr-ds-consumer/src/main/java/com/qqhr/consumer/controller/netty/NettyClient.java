@@ -1,23 +1,34 @@
 package com.qqhr.consumer.controller.netty;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-public class EchoClient {
+import javax.annotation.PostConstruct;
+import java.util.concurrent.TimeUnit;
+public class NettyClient {
 
-    private final static String host = "127.0.0.1";
-    private final static int tmpPort = 8888;
-    public static void main(String[] args){
-        new EchoClient().connect(host,tmpPort);
+    private EventLoopGroup group = new NioEventLoopGroup();
+   // @Value("8888")
+    private int port = 8888;
+   // @Value("${netty.host}")
+    private String host = "127.0.0.1";
+    private SocketChannel socketChannel;
+
+    public void sendMsg(String sendMessage) {
+        //通过ctx向服务端发请求
+        ByteBuf resp = Unpooled.copiedBuffer(sendMessage.getBytes());
+        socketChannel.writeAndFlush(resp);
     }
 
-    public void connect(String host, int port){
-
+    //@PostConstruct
+    public void start()  {
         //创建NIO处理线程
         NioEventLoopGroup eventLoopGroup  = new NioEventLoopGroup();
         //实例化Bootstrap
@@ -35,19 +46,24 @@ public class EchoClient {
                         socketChannel.pipeline().addLast(new EchoClientHandler());
                     }
                 });
+
+
+       /* ChannelFuture future = bootstrap.connect();
+
+        socketChannel = (SocketChannel) future.channel();*/
         try {
             //发起连接，将异步操作转为同步阻塞
-            ChannelFuture cf = bootstrap.connect(host,port).sync();
-            //同步阻塞至channle关闭后退出
-            cf.channel().closeFuture().sync();
+            ChannelFuture cf = bootstrap.connect(host,port);
 
-        } catch (InterruptedException e) {
+            socketChannel = (SocketChannel) cf.channel();
+            //同步阻塞至channle关闭后退出
+           // cf.channel().closeFuture().sync();
+
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             //优雅退出，释放线程资源
             eventLoopGroup.shutdownGracefully();
         }
-
     }
-
 }

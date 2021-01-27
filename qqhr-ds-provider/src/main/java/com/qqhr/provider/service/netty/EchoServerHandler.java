@@ -5,7 +5,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.springframework.stereotype.Component;
-
+//此类配合NettyBootsrapRunner 使用
 @Component
 public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
