@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface UserMapper {
@@ -29,4 +30,6 @@ public interface UserMapper {
     int findUserById(String id);
     //@Select("select * from user where login_name = #{username}")
     User findByUserName(String username);
+
+    List<User> findListUser(Map param);
 }
