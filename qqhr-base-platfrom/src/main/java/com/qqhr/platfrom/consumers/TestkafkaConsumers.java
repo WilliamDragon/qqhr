@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,10 +47,27 @@ public class TestkafkaConsumers {
     
 
     @KafkaListener(id = "batch",clientIdPrefix = "batch",topics = {"topic.quick.batch"},containerFactory = "batchContainerFactory")
+    public void batchListener(List<String> data, Acknowledgment ack) {
+
+        try {
+            log.info("topic.quick.batch  receive : ");
+            for (String s : data) {
+                log.info(s);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            ack.acknowledge();//手动提交偏移量
+        }
+    }
+
+   /* @KafkaListener(id = "batch",clientIdPrefix = "batch",topics = {"topic.quick.batch"},containerFactory = "batchContainerFactory")
     public void batchListener(List<String> data) {
+
         log.info("topic.quick.batch  receive : ");
         for (String s : data) {
             log.info(s);
         }
-    }
+    }*/
 }

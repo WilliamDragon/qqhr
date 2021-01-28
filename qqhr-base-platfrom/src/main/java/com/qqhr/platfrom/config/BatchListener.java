@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -53,7 +54,7 @@ public class BatchListener {
         return props;
     }
 
-    @Bean("batchContainerFactory")
+    /*@Bean("batchContainerFactory")
     public ConcurrentKafkaListenerContainerFactory listenerContainer() {
         ConcurrentKafkaListenerContainerFactory container = new ConcurrentKafkaListenerContainerFactory();
         container.setConsumerFactory(new DefaultKafkaConsumerFactory(consumerProps()));
@@ -62,8 +63,20 @@ public class BatchListener {
         //设置为批量监听
         container.setBatchListener(true);
         return container;
-    }
+    }*/
 
+    @Bean("batchContainerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> batchKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, byte[]> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(new DefaultKafkaConsumerFactory(consumerProps()));
+
+        factory.setConcurrency(concurrency);
+        factory.setBatchListener(true);//设置批量
+        factory.getContainerProperties().setPollTimeout(Long.parseLong(autoCommitIntervalMsConfig));
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);//设置提交偏移量的方式
+        return factory;
+    }
     @Bean
     public NewTopic batchTopic() {
         return new NewTopic("topic.quick.batch", 8, (short) 1);
