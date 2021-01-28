@@ -47,20 +47,19 @@ public class TestkafkaConsumers {
     
 
     @KafkaListener(id = "batch",clientIdPrefix = "batch",topics = {"topic.quick.batch"},containerFactory = "batchContainerFactory")
-    public void batchListener(List<String> data, Acknowledgment ack) {
+    public void batchListener(List<String> list, Acknowledgment ack) {
 
-        try {
-            log.info("topic.quick.batch  receive : ");
-            for (String s : data) {
-                log.info(s);
-            }
+        list.parallelStream().forEach(data -> dealKafkaData(data));
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            ack.acknowledge();//手动提交偏移量
-        }
+        ack.acknowledge();//手动提交偏移量
+
     }
+
+    public void dealKafkaData(String data){
+        //根据 data处理业务 todo
+    }
+
+
 
    /* @KafkaListener(id = "batch",clientIdPrefix = "batch",topics = {"topic.quick.batch"},containerFactory = "batchContainerFactory")
     public void batchListener(List<String> data) {
