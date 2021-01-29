@@ -9,6 +9,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -30,6 +31,24 @@ import java.util.Map;
 @EnableKafka
 public class KafkaConfiguration {
 
+    @Value("${spring.kafka.consumer.bootstrapServersConfig}")
+    private String bootstrapServersConfig;
+    @Value("${spring.kafka.consumer.enableAutoCommitConfig}")
+    private String enableAutoCommitConfig;
+    @Value("${spring.kafka.consumer.autoCommitIntervalMsConfig}")
+    private String autoCommitIntervalMsConfig;
+    @Value("${spring.kafka.consumer.keyDeserializerClassConfig}")
+    private String keyDeserializerClassConfig;
+    @Value("${spring.kafka.consumer.valueDeserializerClassConfig}")
+    private String valueDeserializerClassConfig;
+    @Value("${spring.kafka.consumer.maxPollRecordsConfig}")
+    private String maxPollRecordsConfig;
+    @Value("${spring.kafka.consumer.maxPollIntervalMsConfig}")
+    private String maxPollIntervalMsConfig;
+    @Value("${spring.kafka.consumer.concurrency}")
+    private Integer concurrency;
+    @Value("${spring.kafka.consumer.groupIdConfig}")
+    private String groupIdConfig;
     //ConcurrentKafkaListenerContainerFactory为创建Kafka监听器的工程类，这里只配置了消费者
     //kafka 监听工厂
     @Bean
@@ -73,31 +92,36 @@ public class KafkaConfiguration {
         return template;
     }
 
-    //消费者配置参数
-    private Map<String, Object> consumerProps() {
-        Map<String, Object> props = new HashMap<>();
-        //连接地址
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        //GroupID
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "bootKafka");
-        //是否自动提交
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
-        //自动提交的频率
-        props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "100");
-        //Session超时设置
-        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "15000");
-        //键的反序列化方式
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class);
-        //值的反序列化方式
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        return props;
+    @Bean("batchContainerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> batchKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, byte[]> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(new DefaultKafkaConsumerFactory(consumerProps()));
+
+        factory.setConcurrency(concurrency);
+        factory.setBatchListener(true);//设置批量
+        factory.getContainerProperties().setPollTimeout(Long.parseLong(autoCommitIntervalMsConfig));
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);//设置提交偏移量的方式
+        return factory;
     }
 
-    //生产者配置
+    //消费者Map
+    private Map<String, Object> consumerProps() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServersConfig);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupIdConfig);
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, enableAutoCommitConfig);
+        props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, autoCommitIntervalMsConfig);
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecordsConfig);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializerClassConfig);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeserializerClassConfig);
+        return props;
+    }
+    //生产者Map
     private Map<String, Object> senderProps (){
         Map<String, Object> props = new HashMap<>();
         //连接地址
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServersConfig);
         //重试，0为不启用重试机制
         props.put(ProducerConfig.RETRIES_CONFIG, 1);
         //控制批处理大小，单位为字节
