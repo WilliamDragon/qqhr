@@ -3,10 +3,7 @@ package com.qqhr.platfrom.config;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.IntegerDeserializer;
-import org.apache.kafka.common.serialization.IntegerSerializer;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.common.serialization.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +28,7 @@ import java.util.Map;
 @EnableKafka
 public class KafkaConfiguration {
 
+    //消费者配置
     @Value("${spring.kafka.consumer.bootstrapServersConfig}")
     private String bootstrapServersConfig;
     @Value("${spring.kafka.consumer.enableAutoCommitConfig}")
@@ -49,6 +47,13 @@ public class KafkaConfiguration {
     private Integer concurrency;
     @Value("${spring.kafka.consumer.groupIdConfig}")
     private String groupIdConfig;
+    //生产者配置
+    @Value("${spring.kafka.producer.bootstrapServersConfig}")
+    private String bootstrapServersProducerConfig;
+    @Value("${spring.kafka.producer.keySerializerClassConfig}")
+    private String keySerializerClassConfig;
+    @Value("${spring.kafka.producer.valueSerializerClassConfig}")
+    private String valueSerializerClassConfig;
     //ConcurrentKafkaListenerContainerFactory为创建Kafka监听器的工程类，这里只配置了消费者
     //kafka 监听工厂
     @Bean
@@ -103,7 +108,7 @@ public class KafkaConfiguration {
         factory.getContainerProperties().setPollTimeout(Long.parseLong(autoCommitIntervalMsConfig));
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);//设置提交偏移量的方式
         return factory;
-    }
+}
 
     //消费者Map
     private Map<String, Object> consumerProps() {
@@ -121,7 +126,7 @@ public class KafkaConfiguration {
     private Map<String, Object> senderProps (){
         Map<String, Object> props = new HashMap<>();
         //连接地址
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServersConfig);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServersProducerConfig);
         //重试，0为不启用重试机制
         props.put(ProducerConfig.RETRIES_CONFIG, 1);
         //控制批处理大小，单位为字节
@@ -131,9 +136,9 @@ public class KafkaConfiguration {
         //生产者可以使用的总内存字节来缓冲等待发送到服务器的记录
         props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 1024000);
         //键的序列化方式
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializerClassConfig);
         //值的序列化方式
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializerClassConfig);
         return props;
     }
 

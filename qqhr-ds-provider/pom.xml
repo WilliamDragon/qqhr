@@ -76,6 +76,13 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
+        <!-- 引入common的依赖 -->
+        <dependency>
+            <groupId>com.qqhr</groupId>
+            <artifactId>common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- 引入web的依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
