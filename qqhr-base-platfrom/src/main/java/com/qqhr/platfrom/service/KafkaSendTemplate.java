@@ -1,5 +1,6 @@
 package com.qqhr.platfrom.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qqhr.common.utils.StringUtil;
 import com.qqhr.platfrom.dto.KafkaMeaasgeHead;
 import org.slf4j.Logger;
@@ -23,29 +24,39 @@ public class KafkaSendTemplate {
     private static final Logger log= LoggerFactory.getLogger(KafkaSendTemplate.class);
     @Autowired
     private KafkaTemplate template;
+
+    /**
+     * 为方法为Kafka发送消息入口，kafkaMessage可以是自定义Bean，或者Map，后续根据实际情况可定制 开发发送消息的模板
+     * 有关Kafka消费者的校验都是举个例子，后续可根据实际情况做和业务相关的校验。
+     * @param topic
+     * @param kafkaMessage
+     */
     @GetMapping("/kaSendTemplate")
-    public void kaSendTemplate(String topic, String kafkaMessage){
+    public void kaSendTemplate(String topic, Object kafkaMessage){
 
         log.info("step1:"+"开始发送消息"+ kafkaMessage);
         try{
-            if(validData(topic,kafkaMessage)){
-                ListenableFuture<SendResult<String, Object>> future = template.send(topic, kafkaMessage);
+            ObjectMapper om = new ObjectMapper();
+            String jsonKafkaMessage = om.writeValueAsString(kafkaMessage);
+            log.info("解析消息："+ jsonKafkaMessage);
+            if(validData(topic,jsonKafkaMessage)){
+                ListenableFuture<SendResult<String, Object>> future = template.send(topic, jsonKafkaMessage);
                 future.addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
                     @Override
                     public void onFailure(Throwable throwable) {
                         //发送失败的处理
-                        log.info("step3:"+"发送消息失败"+kafkaMessage.toString()+throwable.getMessage());
+                        log.info("step3:"+"发送消息失败"+kafkaMessage+throwable.getMessage());
                     }
 
                     @Override
                     public void onSuccess(SendResult<String, Object> stringObjectSendResult) {
                         //发送成功的处理
-                        log.info("step2:"+"发送消息成功"+ kafkaMessage.toString()+ stringObjectSendResult.toString());
+                        log.info("step2:"+"发送消息成功"+ kafkaMessage+ stringObjectSendResult.toString());
                     }
                 });
             }
         }catch (Exception e){
-            log.info("step4:"+"发送消息失败"+kafkaMessage.toString());
+            log.info("step4:"+"发送消息失败"+kafkaMessage);
             e.printStackTrace();
         }
 

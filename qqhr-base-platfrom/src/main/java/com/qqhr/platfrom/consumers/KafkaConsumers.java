@@ -1,7 +1,10 @@
 package com.qqhr.platfrom.consumers;
 
+import com.qqhr.platfrom.config.ErrorListener;
 import com.qqhr.platfrom.dto.KafkaMessage;
 import com.qqhr.platfrom.executor.KafkaMsgValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
@@ -17,6 +20,10 @@ import java.util.List;
 @Service
 public class KafkaConsumers {
 
+    private static final Logger log= LoggerFactory.getLogger(KafkaConsumers.class);
+    /**
+     * topics 现写为固定“topic.quick.batch”，后续可根据实际情况 换做枚举更好
+     */
     @Autowired
     KafkaMsgValidator kafkaMsgValidator;
     @KafkaListener(id = "batch",clientIdPrefix = "batch",topics = {"topic.quick.batch"},containerFactory = "batchContainerFactory",errorHandler = "consumerAwareErrorHandler")
@@ -28,6 +35,7 @@ public class KafkaConsumers {
 
     public void dealKafkaData(String data){
         KafkaMessage kafkaMessage = kafkaMsgValidator.parseMsg(data);
+        log.info("topic.quick.batch  receive : "+ data);
         System.out.println("kafkaMessage");
         //根据 data处理业务 todo 后续开发
     }

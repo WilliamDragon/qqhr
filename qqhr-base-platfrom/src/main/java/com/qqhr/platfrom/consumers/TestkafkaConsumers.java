@@ -43,6 +43,11 @@ public class TestkafkaConsumers {
         template.send(topic,message);
         return "success";
     }
+
+    /**
+     * 此方法为 此次测试Kafka的程序入口
+     * @throws JsonProcessingException
+     */
     @GetMapping("/sendMsg2")
     public void testBatch() throws JsonProcessingException {
         /*for (int i = 0; i < 20; i++) {
@@ -60,10 +65,9 @@ public class TestkafkaConsumers {
             ObjectMapper om = new ObjectMapper();
             HashMap<String, Object> map = new HashMap<>();
             map.put("msgId","222");
-
             String json = om.writeValueAsString(map);
             String str = "test batch listener,dataNum-" + i;
-            kafkaSendTemplate.kaSendTemplate("topic.quick.batch",json);
+            kafkaSendTemplate.kaSendTemplate("topic.quick.batch",map);
         }
 
 
