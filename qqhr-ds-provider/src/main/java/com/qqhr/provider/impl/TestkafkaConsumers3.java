@@ -1,4 +1,4 @@
-package com.qqhr.platfrom.consumers;
+package com.qqhr.provider.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,13 +24,14 @@ import java.util.List;
 
 /**
  * @Author WilliamDragon
- * @Date 2021/1/27 14:34
+ * @Date 2021/3/8 14:12
  * @Version 1.0
  */
+//此类为专门测试kafka消息使用，仅为为测试使用
 @RestController
-public class TestkafkaConsumers {
+public class TestkafkaConsumers3 {
 
-    private static final Logger log= LoggerFactory.getLogger(TestkafkaConsumers.class);
+    private static final Logger log= LoggerFactory.getLogger(TestkafkaConsumers3.class);
     @Autowired
     private KafkaTemplate template;
     @Autowired
@@ -38,7 +39,7 @@ public class TestkafkaConsumers {
     @Autowired
     KafkaMsgValidator kafkaMsgValidator;
     //topic使用上测试创建的aaaa
-    @GetMapping("/sendMsg")
+    @GetMapping("/sendMsg3")
     public String sendMsg(String topic, String message){
         template.send(topic,message);
         return "success";
@@ -48,7 +49,7 @@ public class TestkafkaConsumers {
      * 此方法为 此次测试Kafka的程序入口
      * @throws JsonProcessingException
      */
-    @GetMapping("/sendMsg2")
+    @GetMapping("/sendMsg4")
     public void testBatch() throws JsonProcessingException {
         /*for (int i = 0; i < 20; i++) {
             template.send("topic.quick.batch", "test batch listener,dataNum-" + i);
@@ -65,7 +66,7 @@ public class TestkafkaConsumers {
             ObjectMapper om = new ObjectMapper();
             HashMap<String, Object> map = new HashMap<>();
             map.put("msgId","222");
-            //map.put("msgTopic","12345678");
+            map.put("msgTopic","12345678");
 
             String json = om.writeValueAsString(map);
             String str = "test batch listener,dataNum-" + i;

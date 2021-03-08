@@ -13,7 +13,22 @@ https://snailclimb.gitee.io/javaguide-interview/#/
 Java 基础
 
 1.Java 中的几种基本数据类型是什么？对应的包装类型是什么？各自占用多少字节呢？
+     解：byte Byte 1字节
+        short Short 2字节
+        int Integer 4字节
+        long Long 8字节
+        char Char 2字节
+        float Float 4字节
+        double  Double  8字节
+        boolen  Boolen 1字节
 2.String 、 StringBuffer 和 StringBuilder 的区别是什么? String 为什么是不可变的?
+     解：String ：字符串内容不经常变化的业务优先使用String。            
+        StringBuffer（线程安全）：频繁的进行字符串的拼接裁剪等，并且运行在多线程环境下，优先使用StringBuffer。
+        eg:xml解析。
+        StringBuilder（线程非安全）：频繁的进行字符串的拼接裁剪等，并且运行在单线程环境下，优先使用StringBuilder。
+        eg:sql语句的拼装，json的封装等。
+        String，StringBuffer 都是final修饰的，因为无论String还是StringBuffer本质都是数组char[] ,因为String的是final char[]，而StringBuffer的是 char[]  ,多了一个final.
+
 3.== 与 equals?hashCode 与 equals ?
 4.Java 反射？反射有什么缺点？你是怎么理解反射的（为什么框架需要反射）？
 5.谈谈对 Java 注解的理解，解决了什么问题？
@@ -131,7 +146,7 @@ MySQL
 3.索引这么多优点，为什么不对表中的每一个列创建一个索引呢？(使用索引一定能提高查询性能吗?)
 4.索引底层的数据结构了解么？Hash 索引和 B+树索引优劣分析
 5.B+树做索引比红黑树好在哪里？
-6.最左前缀匹配原则了解么？
+6.最则左前缀匹配原了解么？
 7.什么是覆盖索引
 
 Redis

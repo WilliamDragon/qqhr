@@ -83,6 +83,12 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.qqhr</groupId>
+            <artifactId>platfrom</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- 引入web的依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

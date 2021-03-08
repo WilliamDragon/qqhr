@@ -31,12 +31,12 @@ public class SayController {
 
     }
 
-    @Autowired
+    /*@Autowired
     private KafkaTemplate template;
     //软件老王，topic使用上测试创建的aaaa
     @GetMapping("/sendMsg")
     public String sendMsg(String topic, String message){
         template.send(topic,message);
         return "success";
-    }
+    }*/
 }
