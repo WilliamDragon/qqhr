@@ -30,4 +30,9 @@ public class StringUtil {
         }
         return false;
     }
+
+    //系统分隔符
+    public static String CRLF = System.getProperty("line.separator");
+    //eg:  StringBuffer sb = new StringBuffer();
+    //     sb.append(System.getProperty("line.separator"));
 }
