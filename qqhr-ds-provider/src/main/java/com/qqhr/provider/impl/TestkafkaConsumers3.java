@@ -70,7 +70,8 @@ public class TestkafkaConsumers3 {
 
             String json = om.writeValueAsString(map);
             String str = "test batch listener,dataNum-" + i;
-            kafkaSendTemplate.kaSendTemplate("topic.quick.batch",map);
+            //topic.quick.batch
+            kafkaSendTemplate.kaSendTemplate("guojinlongTopic",map);
         }
 
 
