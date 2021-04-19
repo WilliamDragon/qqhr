@@ -19,6 +19,7 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 
@@ -76,11 +77,11 @@ public class TestkafkaConsumers {
     }
 
 
-    @KafkaListener(topics = {"aaaa"})
+   /* @KafkaListener(topics = {"aaaa"})
     public void listen(ConsumerRecord record){
         System.out.println(record.topic()+":"+record.value());
     }
-
+*/
     
 
     //@KafkaListener(id = "batch",clientIdPrefix = "batch",topics = {"topic.quick.batch"},containerFactory = "batchContainerFactory",errorHandler = "consumerAwareErrorHandler")
@@ -113,10 +114,11 @@ public class TestkafkaConsumers {
     }
 
 
-    public static void main(String[] args) throws JsonProcessingException {
+    public static void main(String[] args) throws JsonProcessingException, ClassNotFoundException, NoSuchMethodException {
 
 
-        ObjectMapper om = new ObjectMapper();
+
+    /*    ObjectMapper om = new ObjectMapper();
         KafkaMeaasgeHead kafkaMeaasgeHead = new KafkaMeaasgeHead();
         kafkaMeaasgeHead.setMsgId("11");
         kafkaMeaasgeHead.setMsgTimeStamp("123456789");
@@ -136,9 +138,17 @@ public class TestkafkaConsumers {
             System.out.println("sss 为空");
         }
 
-        String ss2 = jsonObject.getString("msgVersion");
+        String ss2 = jsonObject.getString("msgVersion");*/
 
+        KafkaMeaasgeHead kafkaMeaasgeHead = new KafkaMeaasgeHead();
+        Class clazz = kafkaMeaasgeHead.getClass();
+        Class clazz2 = KafkaMessage.class;
+        Class<?> clazz4 = Class.forName("com.df.dd");
 
+        Method execute = clazz.getMethod("execute", String.class);
+        Thread.currentThread().getContextClassLoader();
+
+        String ss = kafkaMeaasgeHead.getClass().getName();
 
     }
 }

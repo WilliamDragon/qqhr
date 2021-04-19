@@ -1,8 +1,16 @@
 package com.qqhr.platfrom.consumers;
 
+import com.alibaba.fastjson.JSON;
+import com.qqhr.common.enums.TopicEnum;
+import com.qqhr.common.utils.JsonUtils;
+import com.qqhr.golden.trade.async.AsyncMessage;
 import com.qqhr.platfrom.config.ErrorListener;
 import com.qqhr.platfrom.dto.KafkaMessage;
+import com.qqhr.platfrom.executor.ExecutorPipeline;
 import com.qqhr.platfrom.executor.KafkaMsgValidator;
+import com.qqhr.platfrom.filter.FilterChain;
+import com.qqhr.platfrom.handler.HandlerMapping;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +34,41 @@ public class KafkaConsumers {
      */
     @Autowired
     KafkaMsgValidator kafkaMsgValidator;
-    @KafkaListener(id = "batch",clientIdPrefix = "batch",topics = {"topic.quick.batch"},containerFactory = "batchContainerFactory",errorHandler = "consumerAwareErrorHandler")
+    @Autowired
+    private FilterChain filterChain;
+    @Autowired
+    HandlerMapping handlerMapping;
+    /*@KafkaListener(id = "batch",clientIdPrefix = "batch",topics = {"topic.quick.batch"},containerFactory = "batchContainerFactory",errorHandler = "consumerAwareErrorHandler")
     public void batchListener(List<String> list, Acknowledgment ack) {
+
         list.parallelStream().forEach(data -> dealKafkaData(data));
+        ack.acknowledge();//手动提交偏移量
+
+    }*/
+    @KafkaListener(id = "batch",clientIdPrefix = "batch",topics = {"topic.quick.batch","guojinlongTopic"},containerFactory = "batchContainerFactory",errorHandler = "consumerAwareErrorHandler")
+    public void batchListener(List<ConsumerRecord<String,String>> list, Acknowledgment ack) {
+
+        System.out.println(list);
+        list.parallelStream().forEach(data -> doTransaction(data));
         ack.acknowledge();//手动提交偏移量
 
     }
 
+    public void doTransaction(ConsumerRecord<String,String> record){
+        String str = record.value();
+        dealKafkaData(str);
+    }
+
     public void dealKafkaData(String data){
+        AsyncMessage asyncMessage = JsonUtils.toObject(data, AsyncMessage.class);
+        //AsyncMessage t = JSON.parseObject(data, AsyncMessage.class);
+        this.filterChain.filter(asyncMessage);
+
+        ExecutorPipeline executorPipeline = this.handlerMapping.doSelectExecutorPipeline(TopicEnum.TRADE_JOB.gettopicName());
+        if(executorPipeline != null){
+            executorPipeline.handle(asyncMessage);
+        }
+
         KafkaMessage kafkaMessage = kafkaMsgValidator.parseMsg(data);
         log.info("topic.quick.batch  receive : "+ data);
         System.out.println("kafkaMessage");
