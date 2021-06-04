@@ -22,8 +22,14 @@
   </insert>
 
   <select id="findListMessageInfo" resultMap="BaseResultMap">
-    select * from kafka_message_info t where t.message_id = #{message_id}
+    select * from kafka_message_info
   </select>
+
+  <update id="updateKafkaMessageInfo">
+    update kafka_message_info t
+    set t.topic=#{topic}
+    where t.message_id=#{messageId}
+  </update>
 
 
 

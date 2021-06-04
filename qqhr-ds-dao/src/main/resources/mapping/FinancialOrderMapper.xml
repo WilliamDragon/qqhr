@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qqhr.dao.mapper.FinancialOrderMapper">
+  <resultMap id="BaseResultMap" type="com.qqhr.entity.FinancialOrder">
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="customer_id" jdbcType="VARCHAR" property="customerId" />
+    <result column="product_id" jdbcType="VARCHAR" property="productId" />
+    <result column="buy_amt" jdbcType="DECIMAL" property="buyAmt" />
+    <result column="buy_num" jdbcType="INTEGER" property="buyNum" />
+    <result column="buy_date" jdbcType="TIMESTAMP" property="buyDate" />
+  </resultMap>
+
+  <insert id="insertFinancialOrder" parameterType="com.qqhr.entity.FinancialOrder" >
+    insert into qq_financial_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="customerId != null" >
+        customer_id,
+      </if>
+      <if test="productId != null" >
+        product_id,
+      </if>
+      <if test="buyAmt != null" >
+        buy_amt,
+      </if>
+      <if test="buyNum != null" >
+        buy_num,
+      </if>
+      <if test="buyDate != null" >
+        buy_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="customerId != null" >
+        #{customerId,jdbcType=VARCHAR},
+      </if>
+      <if test="productId != null" >
+        #{productId,jdbcType=VARCHAR},
+      </if>
+      <if test="buyAmt != null" >
+        #{buyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="buyNum != null" >
+        #{buyNum,jdbcType=INTEGER},
+      </if>
+      <if test="buyDate != null" >
+        #{buyDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+
+
+</mapper>

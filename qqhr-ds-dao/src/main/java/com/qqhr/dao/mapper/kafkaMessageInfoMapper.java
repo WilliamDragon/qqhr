@@ -16,4 +16,6 @@ public interface kafkaMessageInfoMapper {
 
     List<KafkaMessageInfo> findListMessageInfo();
 
+    void updateKafkaMessageInfo(KafkaMessageInfo kafkaMessageInfo);
+
 }

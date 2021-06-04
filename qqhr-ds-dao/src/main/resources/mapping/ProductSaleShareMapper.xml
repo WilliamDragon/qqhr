@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qqhr.dao.mapper.ProductSaleShareMapper">
+  <resultMap id="BaseResultMap" type="com.qqhr.entity.ProductSaleShare">
+    <result column="product_id" jdbcType="VARCHAR" property="productId" />
+    <result column="branchno" jdbcType="VARCHAR" property="branchno" />
+    <result column="product_amt" jdbcType="DECIMAL" property="productAmt" />
+    <result column="product_remainamt" jdbcType="DECIMAL" property="productRemainamt" />
+  </resultMap>
+
+  <!--<insert id="insert" parameterType="com.qqhr.po.KafkaMessageInfo" >
+    insert into kafka_message_info (message_id,message_status,message_type,
+    messgae_data,parition,receice_time,send_time,topic)
+    values(#{messageId,jdbcType=VARCHAR}, #{messageStatus,jdbcType=VARCHAR}, #{messageType,jdbcType=VARCHAR},
+      #{messageData,jdbcType=VARCHAR}, #{parition,jdbcType=VARCHAR},
+      #{reviceTime,jdbcType=VARCHAR}, #{sendTime,jdbcType=VARCHAR},#{topic,jdbcType=VARCHAR}
+      )
+  </insert>-->
+
+  <select id="findProductSaleShare" resultMap="BaseResultMap">
+    select * from qq_salecontrol_share t where t.product_id = #{productId} for update
+  </select>
+
+  <update id="updateProductSaleShare">
+    update qq_salecontrol_share t
+    set t.product_remainamt=#{productRemainamt}
+    where t.product_id=#{productId}
+  </update>
+
+
+
+</mapper>

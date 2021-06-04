@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qqhr.dao.mapper.ProductSaleNumMapper">
+  <resultMap id="BaseResultMap" type="com.qqhr.entity.ProductSaleNum">
+    <result column="product_id" jdbcType="VARCHAR" property="productId" />
+    <result column="product_sale_num" jdbcType="INTEGER" property="productSaleNum" />
+    <result column="product_remainsale_num" jdbcType="INTEGER" property="productSaleRemainNum" />
+  </resultMap>
+
+
+  <select id="findProductSaleNum" resultMap="BaseResultMap">
+    select * from qq_salecontrol_quantum t where t.product_id = #{productId}
+  </select>
+
+  <update id="updateProductSaleNum">
+    update qq_salecontrol_quantum
+    <trim prefix="set" suffixOverrides=",">
+      <if test="product_remainsale_num!=null">product_remainsale_num=#{productSaleRemainNum},</if>
+    </trim>
+    WHERE product_id=#{productId}
+  </update>
+
+
+
+</mapper>
