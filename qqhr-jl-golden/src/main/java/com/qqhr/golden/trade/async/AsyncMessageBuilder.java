@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author WilliamDragon
@@ -43,10 +44,11 @@ public class AsyncMessageBuilder {
         return this;
     }
 
-    public <T extends BaseRequestDto>AsyncMessageBuilder withbaseRequestDto(T requestDto){
+    public <T extends BaseRequestDto>AsyncMessageBuilder withconsumerRequestDto(T requestDto){
         this.requestDto = requestDto;
         return this;
     }
+
 
     public AsyncMessageBuilder withmessageId(String messageId){
         this.messageId = messageId;
@@ -63,15 +65,8 @@ public class AsyncMessageBuilder {
             throw new IllegalAccessException("构建消息生产者为空");
         }
 
-        //创建异步消息头
-        AsyncMessageHead asyncMessageHead = new AsyncMessageHead();
-        asyncMessageHead.setMessageId(messageId);
-        asyncMessageHead.setDate(new Date());
-        asyncMessageHead.setMessageType(TopicEnum.TRADE_JOB.gettopicName());
-
-        //requestDto父类 赋值
-        this.requestDto.setTranscationCode(Constants.KAFKA_TRANSCATION_CODE);
-        this.requestDto.setChannelId(Constants.KAFKA_TRANSCATION_CHANNEL);
+        //this.requestDto.setTranscationCode(Constants.KAFKA_TRANSCATION_CODE);
+        //this.requestDto.setChannelId(Constants.KAFKA_TRANSCATION_CHANNEL);
 
         //新建异步消息传送参数,参数均为类的名字以及转Json
         AsyncMessageRequest asyncMessageRequest = new AsyncMessageRequest();
@@ -79,6 +74,13 @@ public class AsyncMessageBuilder {
         asyncMessageRequest.setConsumerClass(this.consumerClass.getName());
         asyncMessageRequest.setConsumerMethod(this.consumerMethod);
         asyncMessageRequest.setMessageId(this.messageId);
+        //创建异步消息头
+        AsyncMessageHead asyncMessageHead = new AsyncMessageHead();
+        asyncMessageHead.setMessageId(messageId);
+        asyncMessageHead.setDate(new Date());
+        asyncMessageHead.setMessageType(TopicEnum.TRADE_JOB.gettopicName());
+
+        //requestDto父类 赋值
         asyncMessageRequest.setConsumerRequestDtoClass(this.requestDto.getClass().getName());
         asyncMessageRequest.setGetConsumerRequestDto(this.requestDto.toJson());
 

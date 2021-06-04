@@ -2,6 +2,8 @@ package com.qqhr.golden.trade.async;
 
 import com.qqhr.common.base.BaseObject;
 
+import java.util.List;
+
 /**
  * @Author WilliamDragon
  * @Date 2021/3/17 17:58
@@ -9,7 +11,7 @@ import com.qqhr.common.base.BaseObject;
  * 交易RequestDto
  */
 
-public class AsyncMessageRequest extends BaseObject {
+public class AsyncMessageRequest<E> extends BaseObject {
     private String messageId;
     private String producerClass;
     private String consumerClass;
@@ -64,4 +66,5 @@ public class AsyncMessageRequest extends BaseObject {
     public void setGetConsumerRequestDto(String getConsumerRequestDto) {
         this.getConsumerRequestDto = getConsumerRequestDto;
     }
+
 }
