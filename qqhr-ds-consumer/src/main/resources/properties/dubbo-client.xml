@@ -20,6 +20,7 @@
     <dubbo:consumer check="false"/>
 
     <dubbo:reference  id="sayService" check="false" interface="com.qqhr.api.SayService"/>
+    <dubbo:reference  id="dr000428BuyService" check="false" interface="com.qqhr.api.Dr000428BuyService" timeout="60000"/>
 
-
+    <dubbo:reference  id="dr000428ChangeBuyService" check="false" interface="com.qqhr.api.Dr000428ChangeBuyService" timeout="60000"/>
 </beans>
