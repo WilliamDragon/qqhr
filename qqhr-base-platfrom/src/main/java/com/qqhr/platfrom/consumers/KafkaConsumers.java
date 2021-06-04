@@ -1,10 +1,13 @@
 package com.qqhr.platfrom.consumers;
 
 import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import com.qqhr.common.enums.TopicEnum;
 import com.qqhr.common.utils.JsonUtils;
 import com.qqhr.golden.trade.async.AsyncMessage;
+import com.qqhr.golden.trade.async.AsyncMessageRequest;
 import com.qqhr.platfrom.config.ErrorListener;
+import com.qqhr.platfrom.dispatcher.MsgDispatcher;
 import com.qqhr.platfrom.dto.KafkaMessage;
 import com.qqhr.platfrom.executor.ExecutorPipeline;
 import com.qqhr.platfrom.executor.KafkaMsgValidator;
@@ -38,6 +41,9 @@ public class KafkaConsumers {
     private FilterChain filterChain;
     @Autowired
     HandlerMapping handlerMapping;
+
+    @Autowired
+    private MsgDispatcher msgDispatcher;
     /*@KafkaListener(id = "batch",clientIdPrefix = "batch",topics = {"topic.quick.batch"},containerFactory = "batchContainerFactory",errorHandler = "consumerAwareErrorHandler")
     public void batchListener(List<String> list, Acknowledgment ack) {
 
@@ -56,22 +62,42 @@ public class KafkaConsumers {
 
     public void doTransaction(ConsumerRecord<String,String> record){
         String str = record.value();
-        dealKafkaData(str);
+        try{
+            dealKafkaData(str);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
-    public void dealKafkaData(String data){
-        AsyncMessage asyncMessage = JsonUtils.toObject(data, AsyncMessage.class);
-        //AsyncMessage t = JSON.parseObject(data, AsyncMessage.class);
+    public void dealKafkaData(String data) throws ClassNotFoundException {
+
+        Gson gson = new Gson();
+        AsyncMessage asyncMessage = gson.fromJson(data, AsyncMessage.class);
+        System.out.println(asyncMessage);
+
+        String bodyData = asyncMessage.getAsyncMessageBody().getData();
+        String bodyDataClass =  asyncMessage.getAsyncMessageBody().getDataClass();
+        AsyncMessageRequest asyncMessageRequest = (AsyncMessageRequest) JsonUtils.toObject(bodyData, Class.forName(bodyDataClass));
+
+        msgDispatcher.dispatcher(asyncMessageRequest);
+
+
+       /* //执行链 进行过滤
         this.filterChain.filter(asyncMessage);
 
+        //寻找select执行器 和执行链大同小异
         ExecutorPipeline executorPipeline = this.handlerMapping.doSelectExecutorPipeline(TopicEnum.TRADE_JOB.gettopicName());
         if(executorPipeline != null){
             executorPipeline.handle(asyncMessage);
         }
+        //如果需要后续在对消息进行处理，则可以在写一个执行链，和filter一样（PostProcess）
+        //this.postProcessChain.postProcess(asyncMessage);  todo
+
 
         KafkaMessage kafkaMessage = kafkaMsgValidator.parseMsg(data);
         log.info("topic.quick.batch  receive : "+ data);
-        System.out.println("kafkaMessage");
+        System.out.println("kafkaMessage");*/
         //根据 data处理业务 todo 后续开发
     }
 }

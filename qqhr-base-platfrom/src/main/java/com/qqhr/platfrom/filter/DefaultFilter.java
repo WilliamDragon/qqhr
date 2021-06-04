@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
  * @Author WilliamDragon
  * @Date 2021/4/15 15:55
  * @Version 1.0
- * 以后增加过滤条件时候，可以增加继承AbstractFilter类，eg:Default2Filter.java 一样，遵循开闭原则
+ * 以后增加过滤加继承AbstractFilte条件时候，可以增r类，eg:Default2Filter.java 一样，遵循开闭原则
  */
 @Component
 public class DefaultFilter extends AbstractFilter{

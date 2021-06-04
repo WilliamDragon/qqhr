@@ -1,12 +1,14 @@
 package com.qqhr.platfrom.dto;
 
+import java.io.Serializable;
+
 /**
  * @Author WilliamDragon
  * @Date 2021/2/1 9:49
  * @Version 1.0
  */
 
-public class KafkaMessage {
+public class KafkaMessage implements Serializable {
     KafkaMeaasgeHead kafkaMeaasgeHead;
     KafkaMessageBody kafkaMessageBody;
 
