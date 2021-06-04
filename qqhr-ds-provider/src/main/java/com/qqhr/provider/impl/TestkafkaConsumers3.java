@@ -2,7 +2,9 @@ package com.qqhr.provider.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.qqhr.common.utils.StringUtil;
+import com.qqhr.golden.trade.async.AsyncMessage;
 import com.qqhr.platfrom.dto.KafkaMeaasgeHead;
 import com.qqhr.platfrom.dto.KafkaMessage;
 import com.qqhr.platfrom.dto.KafkaMessageBody;
@@ -17,6 +19,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -49,40 +52,44 @@ public class TestkafkaConsumers3 {
      * 此方法为 此次测试Kafka的程序入口
      * @throws JsonProcessingException
      */
-    @GetMapping("/sendMsg4")
+    @PostMapping("/sendMsg4")
     public void testBatch() throws JsonProcessingException {
         /*for (int i = 0; i < 20; i++) {
-            template.send("topic.quick.batch", "test batch listener,dataNum-" + i);
+            templte.send("topic.quick.batch", "test batch listener,daataNum-" + i);
         }*/
         KafkaMeaasgeHead kafkaMeaasgeHead = new KafkaMeaasgeHead();
         kafkaMeaasgeHead.setMsgId("11");
         KafkaMessageBody kafkaMessageBody = new KafkaMessageBody();
-        kafkaMessageBody.setMsgTopic("topic.quick.batch");
+        kafkaMessageBody.setMsgTopic("topic.quick.batch12346789");
         KafkaMessage kafkaMessage = new KafkaMessage();
         kafkaMessage.setKafkaMeaasgeHead(kafkaMeaasgeHead);
         kafkaMessage.setKafkaMessageBody(kafkaMessageBody);
 
-        for (int i = 20; i < 21; i++) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("ssss",kafkaMessage);
+        kafkaSendTemplate.kaSendTemplate("guojinlongTopic",kafkaMessage);
+        kafkaSendTemplate.kaSendTemplate("guojinlongTopic",map);
+        /*for (int i = 20; i < 21; i++) {
             ObjectMapper om = new ObjectMapper();
             HashMap<String, Object> map = new HashMap<>();
-            map.put("msgId","222");
+            map.put("msgId","8888888");
             map.put("msgTopic","12345678");
 
             String json = om.writeValueAsString(map);
             String str = "test batch listener,dataNum-" + i;
-            //topic.quick.batch
             kafkaSendTemplate.kaSendTemplate("guojinlongTopic",map);
-        }
+            //kafkaSendTemplate.kaSendTemplate("guojinlongTopic",map);
+        }*/
 
 
     }
 
 
-    @KafkaListener(topics = {"aaaa"})
+    /*@KafkaListener(topics = {"aaaa"})
     public void listen(ConsumerRecord record){
         System.out.println(record.topic()+":"+record.value());
     }
-
+*/
     
 
     //@KafkaListener(id = "batch",clientIdPrefix = "batch",topics = {"topic.quick.batch"},containerFactory = "batchContainerFactory",errorHandler = "consumerAwareErrorHandler")
@@ -117,8 +124,20 @@ public class TestkafkaConsumers3 {
 
     public static void main(String[] args) throws JsonProcessingException {
 
+        KafkaMeaasgeHead kafkaMeaasgeHead = new KafkaMeaasgeHead();
+        kafkaMeaasgeHead.setMsgId("11");
+        KafkaMessageBody kafkaMessageBody = new KafkaMessageBody();
+        kafkaMessageBody.setMsgTopic("topic.quick.batch12346789");
+        KafkaMessage kafkaMessage = new KafkaMessage();
+        kafkaMessage.setKafkaMeaasgeHead(kafkaMeaasgeHead);
+        kafkaMessage.setKafkaMessageBody(kafkaMessageBody);
+        Gson gson = new Gson();
+        String s = gson.toJson(kafkaMessage);
+        System.out.println(s);
+        KafkaMessage kafkaMessage1 = gson.fromJson(s, KafkaMessage.class);
+        System.out.println(kafkaMessage1);
 
-        ObjectMapper om = new ObjectMapper();
+        /*ObjectMapper om = new ObjectMapper();
         KafkaMeaasgeHead kafkaMeaasgeHead = new KafkaMeaasgeHead();
         kafkaMeaasgeHead.setMsgId("11");
         kafkaMeaasgeHead.setMsgTimeStamp("123456789");
@@ -138,7 +157,7 @@ public class TestkafkaConsumers3 {
             System.out.println("sss 为空");
         }
 
-        String ss2 = jsonObject.getString("msgVersion");
+        String ss2 = jsonObject.getString("msgVersion");*/
 
 
 

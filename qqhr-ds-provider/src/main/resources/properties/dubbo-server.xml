@@ -25,7 +25,10 @@
     <!-- declare the service interface to be exported -->
     <dubbo:service  interface="com.qqhr.api.SayService" ref="sayServiceImpl"/>
 
+    <dubbo:service interface="com.qqhr.api.Dr000428BuyService" ref="dr000428BuyServiceImpl"/>
 
+
+    <dubbo:service interface="com.qqhr.api.Dr000428ChangeBuyService" ref="dr000428ChangeBuyServiceImpl"/>
     <!--<dubbo:consumer id="default-consumer" default="true" check="false" timeout="5000" retries="0" />-->
 
 </beans>
